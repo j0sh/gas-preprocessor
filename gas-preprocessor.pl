@@ -91,13 +91,18 @@ while (<ASMFILE>) {
     s/\.arch/$comm.arch/x;
 
     # the syntax for these is a little different
-    s/\.global/.globl/x;
+    s/\.global\s+(.*)/.globl _$1\n_$1:/x;
     # also catch .section .rodata since the equivalent to .const_data is .section __DATA,__const
     s/(.*)\.rodata/.const_data/x;
     s/\.int/.long/x;
     s/\.float/.single/x;
     s/\.hword/.short/x;
     s/\.equ/.set/x;
+
+    # add underscore to references to public symbols (non-ffmpeg only)
+    s/b(.*)\sff_/b$1 _ff_/x;
+    s/movrel(.*)\sff_/movrel$1 _ff_/x;
+    s/adr(.*)\sff_/adr$1 _ff_/x;
 
     # catch unknown section names that aren't mach-o style (with a comma)
     if (/.section ([^,]*)$/) {
