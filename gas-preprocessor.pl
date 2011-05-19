@@ -87,6 +87,8 @@ while (<ASMFILE>) {
     s/\.ltorg/$comm.ltorg/x;
     s/\.size/$comm.size/x;
     s/\.fpu/$comm.fpu/x;
+    s/\.end$/$comm.end/x;
+    s/\.arch/$comm.arch/x;
 
     # the syntax for these is a little different
     s/\.global/.globl/x;
@@ -94,6 +96,8 @@ while (<ASMFILE>) {
     s/(.*)\.rodata/.const_data/x;
     s/\.int/.long/x;
     s/\.float/.single/x;
+    s/\.hword/.short/x;
+    s/\.equ/.set/x;
 
     # catch unknown section names that aren't mach-o style (with a comma)
     if (/.section ([^,]*)$/) {
@@ -104,7 +108,7 @@ while (<ASMFILE>) {
 }
 
 sub parse_line {
-    my $line = @_[0];
+    my $line = lc(@_[0]);
 
     # evaluate .if blocks
     if (scalar(@ifstack)) {
